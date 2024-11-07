@@ -1,8 +1,8 @@
-$VER = "v0.01.000"
+$VER = "v0.01.001"
 $DATE = "Date: {0}" -f (Get-Date)
 
 $COMMENT = @"
-* NEW: script to generate custom manifests from genotyping assays that need rerunning.
+* NEW: Updated requirements file with chardet dependency
 "@
 
 Move-Item -Path "changelog.txt" -Destination "changelog_old.txt"
