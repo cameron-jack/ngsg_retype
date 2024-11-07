@@ -1,8 +1,9 @@
-$VER = "v0.01.001"
+$VER = "v0.01.002"
 $DATE = "Date: {0}" -f (Get-Date)
 
 $COMMENT = @"
-* NEW: Updated requirements file with chardet dependency
+* Fixed: formatting of text display
+* Fixed: sample numbering
 "@
 
 Move-Item -Path "changelog.txt" -Destination "changelog_old.txt"

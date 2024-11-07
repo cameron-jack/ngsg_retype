@@ -169,13 +169,14 @@ def parse_failed_genotyping_results(file_content):
         plate = cols[2]
         wellLocation = cols[3]
         sex = cols[4]
-        alleleSymbol = cols[5]
-        alleleKey = cols[6]
-        assayKey = cols[7]
+        alleleSymbol = cols[5].strip()
+        alleleKey = cols[6].strip()
+        assayKey = cols[7].strip()
         passFail = cols[8]
+        genotype = cols[19]
         reason = cols[21]
         ident = (barcode, plate, wellLocation, sex)
-        if passFail.lower() != 'pass':
+        if '?' in genotype:
             if ident not in failed_assays:
                 failed_assays[ident] = []
             failed_assays[ident].append((assay,alleleSymbol))
@@ -204,7 +205,7 @@ def generate_rerun_manifest(failed_assays, manifest_name='../Downloads/rerun_fai
             for assay, alleleSymbol in failed_assays[ident]:
                 all_assays.append(assay)
                 all_alleleSymbols.append(alleleSymbol)
-            row_array = [str(i),plate, wellLocation, barcode] + all_assays + ['']*(7-len(all_assays)) + ['rerun','',';'.join(all_alleleSymbols)]
+            row_array = [str(i+1),plate, wellLocation, barcode] + all_assays + ['']*(7-len(all_assays)) + ['rerun','',';'.join(all_alleleSymbols)]
             print(','.join(row_array), file=f)
     return manifest_name
 
@@ -250,14 +251,19 @@ def main():
             st.write(f"There are {issue_num} issues found in the file:")
             st.dataframe(df, height=600, width=1000)  # Increase table size
         else:
-            file_content_lines = file_content.split('\n')
-            #print(f'{file_content_lines=}')
+            file_content_lines = [line.strip() for line in file_content.split('\n')]
+            print(f'{file_content_lines=}')
             st.write("The file is valid. Proceeding to build custom manifest for assay reruns")
             failed_assays = parse_failed_genotyping_results(file_content_lines)
             st.write('The following sample/assay combinations appear to have failed:')
+            scrollable = st.container(height=500, border=True)
             for ident in failed_assays:
-                barcode, plate, wellLocation, reason = ident
-                st.write(f'{barcode=}, {plate=}, {wellLocation=}, {reason=}')
+                barcode, plate, wellLocation, sex = ident
+                assays = '; '.join([a.strip() for a,ak in failed_assays[ident] if a.strip() != ''])
+                allele_keys = '; '.join([ak.strip() for a,ak in failed_assays[ident] if ak.strip() != ''])
+                print(allele_keys)
+                row = ' '.join(['Barcode:', barcode, '  plate:', plate, '  well:', wellLocation, '  assays:', assays, '  allele_keys:', allele_keys])
+                scrollable.text(row)
             manifest_name = generate_rerun_manifest(failed_assays)
             st.write('')
             st.write(f'Rerun manifest written to {manifest_name}')

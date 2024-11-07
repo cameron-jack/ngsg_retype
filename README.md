@@ -18,6 +18,7 @@ streamlit==1.34
 streamlit_aggrid==1.0.5
 pandas==2.2.2
 extra_streamlit_components==0.1.71
+chardet==5.2.0
 
 descriptions:
 openpyxl - for reading/writing excel files
@@ -28,6 +29,7 @@ streamlit - web interface
 st_aggrid - interactive web tables
 extra_streamlit_components - advanced GUI widgets
 pandas - dataframes to support web tables
+chardet - figure out character set of input files
 
 ## Changelog:
 
