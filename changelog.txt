@@ -1,0 +1,4 @@
+v0.01.001
+Date: 7/11/2024 3:21:29 PM
+* NEW: Updated requirements file with chardet dependency
+
