@@ -249,14 +249,14 @@ def main():
         
             # Display the number of issues found and the table with custom size
             st.write(f"There are {issue_num} issues found in the file:")
-            st.dataframe(df, height=600, width=1000)  # Increase table size
+            st.dataframe(df, height=400, width=1000)  # Increase table size
         else:
             file_content_lines = [line.strip() for line in file_content.split('\n')]
             print(f'{file_content_lines=}')
             st.write("The file is valid. Proceeding to build custom manifest for assay reruns")
             failed_assays = parse_failed_genotyping_results(file_content_lines)
             st.write('The following sample/assay combinations appear to have failed:')
-            scrollable = st.container(height=500, border=True)
+            scrollable = st.container(height=400, border=True)
             for ident in failed_assays:
                 barcode, plate, wellLocation, sex = ident
                 assays = '; '.join([a.strip() for a,ak in failed_assays[ident] if a.strip() != ''])

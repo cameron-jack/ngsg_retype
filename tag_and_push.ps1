@@ -1,9 +1,8 @@
-$VER = "v0.01.002"
+$VER = "v0.01.003"
 $DATE = "Date: {0}" -f (Get-Date)
 
 $COMMENT = @"
-* Fixed: formatting of text display
-* Fixed: sample numbering
+* Fixed: reduced display height to better fit workstation display
 "@
 
 Move-Item -Path "changelog.txt" -Destination "changelog_old.txt"
