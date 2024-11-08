@@ -1,3 +1,7 @@
+v0.01.004
+Date: 8/11/2024 4:16:54 PM
+* Fixed: startup script contained incorrect path to virtualenv
+
 v0.01.003
 Date: 8/11/2024 4:15:36 PM
 * Fixed: reduced display height to better fit workstation display

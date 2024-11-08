@@ -1,8 +1,8 @@
-$VER = "v0.01.003"
+$VER = "v0.01.004"
 $DATE = "Date: {0}" -f (Get-Date)
 
 $COMMENT = @"
-* Fixed: reduced display height to better fit workstation display
+* Fixed: startup script contained incorrect path to virtualenv
 "@
 
 Move-Item -Path "changelog.txt" -Destination "changelog_old.txt"
