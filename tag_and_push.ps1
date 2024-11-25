@@ -1,8 +1,10 @@
-$VER = "v0.01.004"
+$VER = "v0.02.000"
 $DATE = "Date: {0}" -f (Get-Date)
 
 $COMMENT = @"
-* Fixed: startup script contained incorrect path to virtualenv
+* Complete rewrite
+* NEW: interface takes a results workbook and asks for the Stage3.csv file from the experiment
+* NEW: generates a 384-well custom manifest that can be loaded directly into the main pipeline for reruns
 "@
 
 Move-Item -Path "changelog.txt" -Destination "changelog_old.txt"
