@@ -1,3 +1,7 @@
+v0.02.003
+Date: 26/11/2024 8:41:15 AM
+* FIXED: added example Stage3.csv file
+
 v0.02.002
 Date: 26/11/2024 8:39:41 AM
 * FIXED: added bin files

@@ -1,8 +1,8 @@
-$VER = "v0.02.002"
+$VER = "v0.02.003"
 $DATE = "Date: {0}" -f (Get-Date)
 
 $COMMENT = @"
-* FIXED: added bin files
+* FIXED: added example Stage3.csv file
 "@
 
 Move-Item -Path "changelog.txt" -Destination "changelog_old.txt"
