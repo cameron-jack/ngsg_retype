@@ -1,8 +1,8 @@
-$VER = "v0.02.001"
+$VER = "v0.02.002"
 $DATE = "Date: {0}" -f (Get-Date)
 
 $COMMENT = @"
-* FIXED: added stutil.py
+* FIXED: added bin files
 "@
 
 Move-Item -Path "changelog.txt" -Destination "changelog_old.txt"
