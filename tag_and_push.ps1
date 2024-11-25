@@ -1,10 +1,8 @@
-$VER = "v0.02.000"
+$VER = "v0.02.001"
 $DATE = "Date: {0}" -f (Get-Date)
 
 $COMMENT = @"
-* Complete rewrite
-* NEW: interface takes a results workbook and asks for the Stage3.csv file from the experiment
-* NEW: generates a 384-well custom manifest that can be loaded directly into the main pipeline for reruns
+* FIXED: added stutil.py
 "@
 
 Move-Item -Path "changelog.txt" -Destination "changelog_old.txt"
