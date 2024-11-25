@@ -1,3 +1,7 @@
+v0.02.004
+Date: 26/11/2024 8:49:44 AM
+* FIXED: updated README file with MIT license
+
 v0.02.003
 Date: 26/11/2024 8:41:15 AM
 * FIXED: added example Stage3.csv file

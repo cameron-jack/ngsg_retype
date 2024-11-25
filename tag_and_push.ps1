@@ -1,8 +1,8 @@
-$VER = "v0.02.003"
+$VER = "v0.02.004"
 $DATE = "Date: {0}" -f (Get-Date)
 
 $COMMENT = @"
-* FIXED: added example Stage3.csv file
+* FIXED: updated README file with MIT license
 "@
 
 Move-Item -Path "changelog.txt" -Destination "changelog_old.txt"
