@@ -397,7 +397,14 @@ def read_text_file(file_stream):
     
     # Detect encoding and Decode the file content
     result = chardet.detect(rawfile)
+    if not result:
+        st.write('Could not interpret file format')
+        return None
     charenc = result['encoding']
+    if not charenc:
+        st.write('Could not interpret file format')
+        return None
+
     file_content = rawfile.decode(charenc)
     
     # Check for issues in the file content
@@ -429,6 +436,8 @@ def main():
     failed_assays = {}
     stage3_dict = {}
     screen_col1, screen_col2 = st.columns(2)
+    failed_assays = None
+    stage3f = None
     with screen_col1:
         with st.container(border=True):
             #st.write("Upload a genotyping report file and a custom "+\
@@ -449,6 +458,7 @@ def main():
                         row = ' '.join(['Barcode:', barcode, '  plate:', plate, '  well:', wellLocation, '  assays:', assays, '  allele_keys:', allele_keys])
                         scrollable.text(row)
 
+
     with screen_col2:
         if failed_assays:
             with st.container(border=True):
@@ -467,6 +477,8 @@ def main():
             st.write(f'Successfully wrote new 384-well plate manifest to: {manifest_name}')
         else:
             st.write(f'Failed to write to {manifest_name}. Do you have an older version of the file open for viewing?')
+        failed_assays = {}
+        stage3_dict = {}
 
 if __name__ == '__main__':
     main()

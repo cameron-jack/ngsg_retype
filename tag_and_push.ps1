@@ -1,8 +1,9 @@
-$VER = "v0.02.004"
+$VER = "v0.02.005"
 $DATE = "Date: {0}" -f (Get-Date)
 
 $COMMENT = @"
-* FIXED: updated README file with MIT license
+* FIXED: it would complete with a previously uploaded Stage3 file
+* FIXED: hard crash with unknown file formats
 "@
 
 Move-Item -Path "changelog.txt" -Destination "changelog_old.txt"

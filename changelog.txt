@@ -1,3 +1,8 @@
+v0.02.005
+Date: 26/11/2024 1:29:28 PM
+* FIXED: it would complete with a previously uploaded Stage3 file
+* FIXED: hard crash with unknown file formats
+
 v0.02.004
 Date: 26/11/2024 8:49:44 AM
 * FIXED: updated README file with MIT license
