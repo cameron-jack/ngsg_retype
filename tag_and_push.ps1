@@ -1,9 +1,8 @@
-$VER = "v0.02.005"
+$VER = "v0.02.006"
 $DATE = "Date: {0}" -f (Get-Date)
 
 $COMMENT = @"
-* FIXED: it would complete with a previously uploaded Stage3 file
-* FIXED: hard crash with unknown file formats
+* CHANGED: Renamed to Retype_NGSG
 "@
 
 Move-Item -Path "changelog.txt" -Destination "changelog_old.txt"

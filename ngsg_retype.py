@@ -7,7 +7,7 @@
         JCSMR, Australian National University
 
 Streamlit application to read a genotyping report and output a custom manifest,
-and matching Echo_COC_XXX.csv files for rerunning failed assays. 
+and matching Echo_COC_XXX.csv files for retypening failed assays. 
 
 It would be much nicer if it just created DNA plate entries for existing 
 DNA plates, but that would also require changing the pipeline, which for 
@@ -211,7 +211,7 @@ def parse_failed_genotyping_results(file_content):
     return failed_assays
 
 
-# def generate_rerun_manifest(failed_assays, manifest_name='../Downloads/rerun_failures.csv'):
+# def generate_retype_manifest(failed_assays, manifest_name='../Downloads/retype_failures.csv'):
 #     """
 #     We need to output a CSV (comma delimited) with the following headers:
 #         Sample no	plateBarcode	well	sampleBarcode	Assay	Assay	Assay	Assay	\
@@ -233,7 +233,7 @@ def parse_failed_genotyping_results(file_content):
 #             for assay, alleleSymbol in failed_assays[ident]:
 #                 all_assays.append(assay)
 #                 all_alleleSymbols.append(alleleSymbol)
-#             row_array = [str(i+1),plate, wellLocation, barcode] + all_assays + ['']*(7-len(all_assays)) + ['rerun','',';'.join(all_alleleSymbols)]
+#             row_array = [str(i+1),plate, wellLocation, barcode] + all_assays + ['']*(7-len(all_assays)) + ['retype','',';'.join(all_alleleSymbols)]
 #             print(','.join(row_array), file=f)
 #     return manifest_name
 
@@ -332,7 +332,7 @@ def collate_manifest_entries(failed_assays, stage3_dict):
     return plate_set
 
 
-def generate_manifest_384(failed_assays, stage3_dict, manifest_name='../Downloads/rerun_manifest_384.csv'):
+def generate_manifest_384(failed_assays, stage3_dict, manifest_name='../Downloads/retype_manifest_384.csv'):
     """
     Much like a custom manifest but 384 well and potentially more metadata
     Use information from the Stage3.csv file to get the existing DNA plate locations.
@@ -425,12 +425,12 @@ def main():
     and displays all aspects of the experiment state at any time.
     """    
     st.set_page_config(
-        page_title="NGSG: Rerun failed assays",
+        page_title="NGSG: Retype failed assays",
         page_icon="ngsg_icon.png",
         layout="wide"
     )
     add_css()
-    st.title("NGS Genotyping: rerun failed assays")
+    st.title("NGS Genotyping: Retype failed assays")
     st.subheader("Upload a genotyping report file (results workbook) in the left hand panel, and the matching Stage3.csv for this run in the right hand panel")
     hline()
     failed_assays = {}
@@ -441,7 +441,7 @@ def main():
     with screen_col1:
         with st.container(border=True):
             #st.write("Upload a genotyping report file and a custom "+\
-            #        "manifest will be generated to rerun failed assays")
+            #        "manifest will be generated to retype failed assays")
 
             uploaded_file = st.file_uploader("Choose a genotyping report file")
             if uploaded_file is not None:
@@ -471,7 +471,7 @@ def main():
 
     hline()
     if failed_assays and stage3_dict:
-        manifest_name='../Downloads/rerun_manifest_384.csv'
+        manifest_name='../Downloads/retype_manifest_384.csv'
         success = generate_manifest_384(failed_assays, stage3_dict, manifest_name=manifest_name)
         if success:
             st.write(f'Successfully wrote new 384-well plate manifest to: {manifest_name}')

@@ -1,6 +1,6 @@
-# NGSG_rerun - Next Generation Sequencing Genotyping rerun failed assays
+# NGSG_retype - Next Generation Sequencing Genotyping retype failed assays
 
-Simple Streamlit script to convert genotyping output reports to new custom manifests to be rerun.
+Simple Streamlit script to convert genotyping output reports to new custom manifests to be retyped.
 
 
 ## Dependencies
@@ -31,7 +31,7 @@ chardet - figure out character set of input files
 See changelog.txt
 
 ## Credits
-The NGS Genotyping Pipeline, NGSXplorer, and Rerun are the creations of The ANU Bioinformatics Consultancy (ABC), 
+The NGS Genotyping Pipeline, NGSXplorer, and Retype are the creations of The ANU Bioinformatics Consultancy (ABC), 
 The Biomolecular Resource Facility (BRF), The John Curtin School of Medical Research (JCSMR), and The Australian National University (ANU).
 The project was initiated at the end of 2018 by the BRF and the construction was undertaken by the ABC - primarily 
 Bob Buckley assisted by Cameron Jack, and later Cameron Jack assisted by Gabi (Gabrielle) Ryan and Eslam Ibrahim. 

@@ -1,3 +1,7 @@
+v0.02.006
+Date: 28/11/2024 2:13:12 PM
+* CHANGED: Renamed to Retype_NGSG
+
 v0.02.005
 Date: 26/11/2024 1:29:28 PM
 * FIXED: it would complete with a previously uploaded Stage3 file
