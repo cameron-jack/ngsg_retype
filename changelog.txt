@@ -1,3 +1,7 @@
+v0.02.007
+Date: 4/12/2024 10:34:59 AM
+* FIXED: runn script added
+
 v0.02.006
 Date: 28/11/2024 2:13:12 PM
 * CHANGED: Renamed to Retype_NGSG

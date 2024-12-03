@@ -1,8 +1,8 @@
-$VER = "v0.02.006"
+$VER = "v0.02.007"
 $DATE = "Date: {0}" -f (Get-Date)
 
 $COMMENT = @"
-* CHANGED: Renamed to Retype_NGSG
+* FIXED: runn script added
 "@
 
 Move-Item -Path "changelog.txt" -Destination "changelog_old.txt"
