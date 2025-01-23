@@ -1,8 +1,8 @@
-$VER = "v0.02.007"
+$VER = "v0.03.000"
 $DATE = "Date: {0}" -f (Get-Date)
 
 $COMMENT = @"
-* FIXED: runn script added
+* CHANGED: now outputs as many assay columns in manifest as required by failed assays
 "@
 
 Move-Item -Path "changelog.txt" -Destination "changelog_old.txt"

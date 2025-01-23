@@ -292,16 +292,20 @@ def parse_stage3_csv(file_content):
 def collate_manifest_entries(failed_assays, stage3_dict):
     """
     Helper function that matches failed assays to DNA plate sample entries
+    Also returns the maximum number of assays across all samples
     """
     # collect entries by plate first
     # {(barcode,samplePlate,sampleWell,sex)=[(assay,alleleSymbol)]} from failed_assays
     plate_set = {}  # [PID] = {well:(sample, assay...., clientName,sampleName,alleleSymbol...)}
     #print(f'{failed_assays=}')
     #print(f'{stage3_dict=}')
+    max_assays = 0
     try:
         for ident in failed_assays:
             barcode,_,_,_ = ident
             assays = [a[0] for a in failed_assays[ident]]
+            if len(assays) > max_assays:
+                max_assays = len(assays)
             alleleSymbols = [a[1] for a in failed_assays[ident]]
             sampleName = ''
             clientName = ''
@@ -329,7 +333,7 @@ def collate_manifest_entries(failed_assays, stage3_dict):
                             plate_set[dnaPlate][dnaWell]['sampleName'] = sampleName
     except Exception as exc:
         st.write(f'Failed to collate records {exc}')
-    return plate_set
+    return plate_set, max_assays
 
 
 def generate_manifest_384(failed_assays, stage3_dict, manifest_name='../Downloads/retype_manifest_384.csv'):
@@ -339,28 +343,29 @@ def generate_manifest_384(failed_assays, stage3_dict, manifest_name='../Download
     Inputs: Stage3.csv dict, failed assay dict[(barcode,plate,well,sex)] = [assays]
 
     We need to output a CSV (comma delimited) with the following headers:
-        Sample no	plateBarcode	well	sampleBarcode	Assay	Assay	Assay	Assay	\
-        Assay	Assay	Assay	clientName	sampleName 	alleleSymbol
+        Sample no	plateBarcode	well	sampleBarcode	Assay...	\
+                clientName	sampleName 	alleleSymbol
+    There should be as many assay columns as needed
         
     Sample no. is automatically incremented from 1 for each sample.
     """
     success = False
-    plate_set = collate_manifest_entries(failed_assays, stage3_dict)
+    plate_set, max_assays = collate_manifest_entries(failed_assays, stage3_dict)
     if not plate_set:
         return success
     sample_counter = 0
     try:
         with open(manifest_name, 'wt') as fout:
             # print the header 
-            print(','.join(['Sample no','plateBarcode','well','sampleBarcode','Assay','Assay','Assay','Assay',
-                    'Assay','Assay','Assay','clientName','sampleName','alleleSymbol']), file=fout)
+            print(','.join(['Sample no','plateBarcode','well','sampleBarcode'] + ['Assay']*max_assays +\
+                    ['clientName','sampleName','alleleSymbol']), file=fout)
             for gpid in sorted(plate_set):
                 for pos in util.col_ordered_384:
                     if pos in plate_set[gpid]:
                         barcode = plate_set[gpid][pos]['barcode']
                         pid = util.unguard_pbc(gpid, silent=True)
                         assays = plate_set[gpid][pos]['assays']
-                        padding_cols = ['']*(7-len(plate_set[gpid][pos]['assays']))
+                        padding_cols = ['']*(max_assays-len(plate_set[gpid][pos]['assays']))
                         if padding_cols:
                             assays.extend(padding_cols)
                         clientName = plate_set[gpid][pos]['clientName']

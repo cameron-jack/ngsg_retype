@@ -1,3 +1,7 @@
+v0.03.000
+Date: 23/01/2025 11:55:05 AM
+* CHANGED: now outputs as many assay columns in manifest as required by failed assays
+
 v0.02.007
 Date: 4/12/2024 10:34:59 AM
 * FIXED: runn script added
