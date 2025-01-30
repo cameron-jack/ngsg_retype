@@ -1,8 +1,8 @@
-$VER = "v0.03.000"
+$VER = "v0.03.001"
 $DATE = "Date: {0}" -f (Get-Date)
 
 $COMMENT = @"
-* CHANGED: now outputs as many assay columns in manifest as required by failed assays
+* FIXED: made the results_workbook parser somewhat flexible in column count
 "@
 
 Move-Item -Path "changelog.txt" -Destination "changelog_old.txt"

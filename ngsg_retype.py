@@ -182,8 +182,17 @@ def parse_failed_genotyping_results(file_content):
     """
     failed_assays = {}  # (barcode,plate,wellLocation,sex) = [failed_assays]
     try:
+        seqName_cols = []
+        genotype_col = []
         for line in file_content:
             if line.startswith('barcode'):
+                # look for seqName, which is an assay column header
+                cols = [c.strip() for c in line.split(',')]
+                for i,c in enumerate(cols):
+                    if 'seqName' in c:
+                        seqName_cols.append(i)
+                    if 'genotype' in c.lower():
+                        genotype_col.append(i)
                 continue  # header
             #print(line)
             cols = [c.strip() for c in line.split(',')]
@@ -199,8 +208,9 @@ def parse_failed_genotyping_results(file_content):
             alleleKey = cols[6].strip()
             assayKey = cols[7].strip()
             passFail = cols[8]
-            genotype = cols[19]
-            reason = cols[21]
+            genotype = cols[genotype_col[0]]
+            seqNames = [cols[i] for i in seqName_cols]
+            reason = cols[-1]
             ident = (barcode, plate, wellLocation, sex)
             if '?' in genotype:
                 if ident not in failed_assays:

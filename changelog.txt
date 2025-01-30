@@ -1,3 +1,7 @@
+v0.03.001
+Date: 30/01/2025 1:50:40 PM
+* FIXED: made the results_workbook parser somewhat flexible in column count
+
 v0.03.000
 Date: 23/01/2025 11:55:05 AM
 * CHANGED: now outputs as many assay columns in manifest as required by failed assays
