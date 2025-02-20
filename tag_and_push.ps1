@@ -1,8 +1,10 @@
-$VER = "v0.03.001"
+$VER = "v0.03.002"
 $DATE = "Date: {0}" -f (Get-Date)
 
 $COMMENT = @"
-* FIXED: made the results_workbook parser somewhat flexible in column count
+* FIXED: column counting which stopped successful parsing of workbooks
+* NEW: added a clear screen button to refresh the state of the application
+* CHANGED: rebuilt the uploaders to use callbacks for better clarity
 "@
 
 Move-Item -Path "changelog.txt" -Destination "changelog_old.txt"

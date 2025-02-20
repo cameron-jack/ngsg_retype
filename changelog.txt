@@ -1,3 +1,9 @@
+v0.03.002
+Date: 20/02/2025 12:10:55 PM
+* FIXED: column counting which stopped successful parsing of workbooks
+* NEW: added a clear screen button to refresh the state of the application
+* CHANGED: rebuilt the uploaders to use callbacks for better clarity
+
 v0.03.001
 Date: 30/01/2025 1:50:40 PM
 * FIXED: made the results_workbook parser somewhat flexible in column count

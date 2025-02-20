@@ -174,13 +174,13 @@ def parse_failed_genotyping_results(file_content):
     Genotyping returns a tab-delimited report file with the results of the genotyping assessment for each assay.
     The header looks like this:
         barcode	code_assays	plate	wellLocation	sex	alleleSymbol	alleleKey	assayKey\
-        passFail	seqName1	seqName2	seqName3	seqName4	seqName5	seqName6	\
-        seqName7	efficiency	alleleRatio	alleleRatioAdjusted	genotype	args	reason
+        passFail	seqName1	seqName2	seqNameNNN  efficiency	alleleRatio\
+        alleleRatioAdjusted	genotype	args	reason
     Presumably we are working with passFail?
     
     We need code_assays (sample barcode plus assay), plate, wellLocation, passFail
     """
-    failed_assays = {}  # (barcode,plate,wellLocation,sex) = [failed_assays]
+    #failed_assays = {}  # (barcode,plate,wellLocation,sex) = [failed_assays]
     try:
         seqName_cols = []
         genotype_col = []
@@ -194,10 +194,10 @@ def parse_failed_genotyping_results(file_content):
                     if 'genotype' in c.lower():
                         genotype_col.append(i)
                 continue  # header
-            #print(line)
+            #print(f'{seqName_cols=} {genotype_col=}')
             cols = [c.strip() for c in line.split(',')]
             #print(f'{cols=}')
-            if len(cols) < 21:
+            if all([not c for c in cols]):
                 continue
             code_assays = cols[1]
             barcode, assay = code_assays.split(';')
@@ -207,18 +207,18 @@ def parse_failed_genotyping_results(file_content):
             alleleSymbol = cols[5].strip()
             alleleKey = cols[6].strip()
             assayKey = cols[7].strip()
-            passFail = cols[8]
+            passFail = cols[8].strip()
             genotype = cols[genotype_col[0]]
             seqNames = [cols[i] for i in seqName_cols]
             reason = cols[-1]
             ident = (barcode, plate, wellLocation, sex)
+            #print(f'{ident=} {passFail=} {genotype=}')
             if '?' in genotype:
-                if ident not in failed_assays:
-                    failed_assays[ident] = []
-                failed_assays[ident].append((assay,alleleSymbol))
+                if ident not in st.session_state['failed_assays']:
+                    st.session_state['failed_assays'][ident] = []
+                st.session_state['failed_assays'][ident].append((assay,alleleSymbol))
     except Exception as exc:
         st.write(f'Failed to parse results workbook {exc}')
-    return failed_assays
 
 
 # def generate_retype_manifest(failed_assays, manifest_name='../Downloads/retype_failures.csv'):
@@ -264,7 +264,6 @@ def parse_stage3_csv(file_content):
 
     return a dictionary[(barcode,assay)] = [(dnaPlate,dnaWell,alleleSymbol,alleleKey,assayKey,assay,assayFamily,clientName,sampleName,)]
     """
-    stage3_dict = {}
     counter = 0
     try:
         for i, line in enumerate(file_content):
@@ -274,7 +273,6 @@ def parse_stage3_csv(file_content):
                     continue  # expected header
                 else:
                     print(f'Failed to detect header in file')
-                    return stage3_dict
             cols = l.strip().split(',')
             if len(cols)<5 or cols[0] == '':
                 continue
@@ -289,14 +287,13 @@ def parse_stage3_csv(file_content):
             primer = cols[15]
             clientName = cols[11]
             sampleName = cols[12]
-            if barcode not in stage3_dict:
-                stage3_dict[barcode] = []
-            stage3_dict[barcode].append((dnaPlate,dnaWell,alleleSymbol,alleleKey,assayKey,assay,assayFamily,clientName,sampleName))
+            if barcode not in st.session_state['stage3_dict']:
+                st.session_state['stage3_dict'][barcode] = []
+            st.session_state['stage3_dict'][barcode].append((dnaPlate,dnaWell,alleleSymbol,alleleKey,assayKey,assay,assayFamily,clientName,sampleName))
             counter += 1
     except Exception as exc:
         st.write(f'Parsing Stage3.csv content failed {exc}')
     st.write(f'Read {counter} entries')
-    return stage3_dict
 
 
 def collate_manifest_entries(failed_assays, stage3_dict):
@@ -361,7 +358,9 @@ def generate_manifest_384(failed_assays, stage3_dict, manifest_name='../Download
     """
     success = False
     plate_set, max_assays = collate_manifest_entries(failed_assays, stage3_dict)
+    print(f'{plate_set=} {max_assays=}')
     if not plate_set:
+        st.write('Failed to collate any entries across the two files. Are they from the same experiment?')
         return success
     sample_counter = 0
     try:
@@ -386,7 +385,7 @@ def generate_manifest_384(failed_assays, stage3_dict, manifest_name='../Download
             st.write(f'Wrote {sample_counter} 384-well entries')
             success = True 
     except Exception as exc:
-        st.write(f'Failed to write to manifest {exc}')
+        st.write(f'Failed to write to {manifest_name}. Do you have an older version of the file open for viewing? {exc}')
     return success
 
 
@@ -431,6 +430,25 @@ def read_text_file(file_stream):
     return None
 
 
+def get_report_cb():
+    """
+    Callback to read the genotyping report file
+    """ 
+    if st.session_state['gt_report_uploader'] is not None:
+        file_content = read_text_file(st.session_state['gt_report_uploader'])
+        if file_content:
+            parse_failed_genotyping_results(file_content)
+   
+
+def get_stage3_cb():
+    """
+    Callback to read the Stage3.csv file
+    """
+    stage3f = read_text_file(st.session_state['gt_stage3_uploader'])
+    if stage3f:
+        parse_stage3_csv(stage3f)
+
+
 #=====================================
 # Streamlit UI
 
@@ -448,52 +466,52 @@ def main():
     st.title("NGS Genotyping: Retype failed assays")
     st.subheader("Upload a genotyping report file (results workbook) in the left hand panel, and the matching Stage3.csv for this run in the right hand panel")
     hline()
-    failed_assays = {}
-    stage3_dict = {}
+    if 'failed_assays' not in st.session_state:
+        st.session_state['failed_assays'] = {}
+    if 'stage3_dict' not in st.session_state:
+        st.session_state['stage3_dict'] = {}
     screen_col1, screen_col2 = st.columns(2)
-    failed_assays = None
-    stage3f = None
+    
     with screen_col1:
         with st.container(border=True):
             #st.write("Upload a genotyping report file and a custom "+\
             #        "manifest will be generated to retype failed assays")
-
-            uploaded_file = st.file_uploader("Choose a genotyping report file")
-            if uploaded_file is not None:
-                file_content = read_text_file(uploaded_file)
-                if file_content:
-                    failed_assays = parse_failed_genotyping_results(file_content)
-                    st.write('The following sample/assay combinations appear to have failed from the run:')
-                    scrollable = st.container(height=400, border=True)
-                    for ident in failed_assays:
-                        barcode, plate, wellLocation, sex = ident
-                        assays = '; '.join([a.strip() for a,ak in failed_assays[ident] if a.strip() != ''])
-                        allele_keys = '; '.join([ak.strip() for a,ak in failed_assays[ident] if ak.strip() != ''])
-                        #print(allele_keys)
-                        row = ' '.join(['Barcode:', barcode, '  plate:', plate, '  well:', wellLocation, '  assays:', assays, '  allele_keys:', allele_keys])
-                        scrollable.text(row)
+            st.file_uploader("Choose a genotyping report file", on_change=get_report_cb, key='gt_report_uploader')
+            if st.session_state['failed_assays']:
+                st.write('The following sample/assay combinations appear to have failed from the run:')
+                scrollable = st.container(height=400, border=True)
+                for ident in st.session_state['failed_assays']:
+                    barcode, plate, wellLocation, sex = ident
+                    assays = '; '.join([a.strip() for a,ak in st.session_state['failed_assays'][ident] if a.strip() != ''])
+                    allele_keys = '; '.join([ak.strip() for a,ak in st.session_state['failed_assays'][ident] if ak.strip() != ''])
+                    row = ' '.join(['Barcode:', barcode, '  plate:', plate, '  well:', wellLocation, '  assays:', assays, '  allele_keys:', allele_keys])
+                    scrollable.text(row)
 
 
     with screen_col2:
-        if failed_assays:
+        if st.session_state['failed_assays']:
             with st.container(border=True):
                 st.write("Upload matching Stage3.csv file here")
-                uploaded_file = st.file_uploader("Select the matching Stage3.csv file")
-                if uploaded_file is not None:
-                    stage3f = read_text_file(uploaded_file)
-                    if stage3f:
-                        stage3_dict = parse_stage3_csv(stage3f)
-
+                st.file_uploader("Select the matching Stage3.csv file", on_change=get_stage3_cb, key='gt_stage3_uploader')
+                
     hline()
-    if failed_assays and stage3_dict:
+    if st.session_state['failed_assays'] and st.session_state['stage3_dict']:
         manifest_name='../Downloads/retype_manifest_384.csv'
-        success = generate_manifest_384(failed_assays, stage3_dict, manifest_name=manifest_name)
+        success = generate_manifest_384(st.session_state['failed_assays'], 
+                st.session_state['stage3_dict'], manifest_name=manifest_name)
         if success:
             st.write(f'Successfully wrote new 384-well plate manifest to: {manifest_name}')
         else:
-            st.write(f'Failed to write to {manifest_name}. Do you have an older version of the file open for viewing?')
-        failed_assays = {}
-        stage3_dict = {}
+            st.write(f'Attempt failed')
+        st.session_state['failed_assays'] = None
+        st.session_state['stage3_dict'] = None
+
+    refresh = st.button('Clear session')
+    if refresh:
+        st.session_state['failed_assays'] = {}
+        st.session_state['stage3_dict'] = {}
+        st.rerun()
+    
 
 if __name__ == '__main__':
     main()
